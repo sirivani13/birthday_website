@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Justin!</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #ffe4e1, #fff0f5);
+    overflow: hidden;
+  }
+  #password-page, #game-page, #final-page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  #password-page {
+    display: flex;
+  }
+  input {
+    padding: 12px;
+    font-size: 22px;
+    margin-top: 15px;
+    border-radius: 12px;
+    border: 2px solid #ffb6c1;
+    text-align: center;
+    width: 70%;
+    max-width: 300px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 20px;
+    border-radius: 12px;
+    border: none;
+    background-color: #ff69b4;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #hint {
+    font-size: 20px;
+    color: #8b008b;
+  }
+  #password-error {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #d9534f;
+  }
+  #basket {
+    position: absolute;
+    bottom: 25px;
+    width: 110px;
+    height: 60px;
+    background-color: #ffb6c1;
+    border-radius: 25px;
+  }
+  .gift {
+    position: absolute;
+    width: 55px;
+    height: 55px;
+    font-size: 32px;
+    cursor: pointer;
+  }
+  #messages {
+    margin-top: 25px;
+    font-size: 22px;
+    color: #4b0082;
+    padding: 10px 20px;
+  }
+  #final-page {
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    color: #4b0082;
+    padding: 30px;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background Music -->
+<audio id="bgmusic" loop>
+  <!-- Replace "perfect.mp3" with your own file name -->
+  <source src="perfect.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Password Page -->
+<div id="password-page">
+  <div id="hint">Hint: The person who means the world to you 💫</div>
+  <input type="password" id="password-input" placeholder="Enter the password">
+  <button onclick="checkPassword()">Open 🎁</button>
+  <div id="password-error"></div>
+</div>
+
+<!-- Game Page -->
+<div id="game-page">
+  <div id="messages">Catch the gifts! 🎂🎈🍓</div>
+  <div id="basket"></div>
+</div>
+
+<!-- Final Page -->
+<div id="final-page">
+  🎉🎊 **Happiest birthday Justin !!** 🥳 🎂🍓 <br><br>
+  **Kanha** bless you with lots lots of happiness — stay happiest! ✨<br><br>
+  Hope you look at aunties less now 😉 💜<br><br>
+  *Sending you lots of love & miss you!* 💖
+</div>
+
+<script>
+let password = "Mahi";
+
+// Cute Password Check
+function checkPassword() {
+  let input = document.getElementById('password-input').value;
+  let err = document.getElementById('password-error');
+  if(input.trim() === ""){
+    err.innerText = "Oops, you forgot to type 🥺";
+  } else if(input === password){
+    err.innerText = "";
+    document.getElementById('password-page').style.display = 'none';
+    document.getElementById('bgmusic').play();
+    startGame();
+  } else {
+    err.innerText = "Oops try again 🥺";
+  }
+}
+
+// --- Game Logic ---
+let gamePage, basket;
+let gifts = [];
+let messages = [
+  "Three years of laughter, smiles tucked in every moment, adventures, and many secrets shared. Thanks to you for making my ordinary days feel extraordinary ❤️",
+  "Take care of yourself, mom, and brother. Have a great future ahead with lots of love and happiness 💗",
+  "Sorry for the mistakes I did 🥺. Hope you live the best now. Thanks for everything, enjoy your big dayyy 🎊🥳"
+];
+let giftEmojis = ["🎂", "🎈", "🍓"];
+let gameInterval;
+
+function startGame(){
+  gamePage = document.getElementById('game-page');
+  gamePage.style.display = 'flex';
+  basket = document.getElementById('basket');
+  basket.style.left = (window.innerWidth/2 - 55) + 'px';
+
+  document.addEventListener('mousemove', moveBasket);
+  document.addEventListener('touchmove', moveBasketTouch);
+
+  gameInterval = setInterval(dropGift, 900);
+}
+
+function moveBasket(e){
+  basket.style.left = (e.clientX - 55) + 'px';
+}
+
+function moveBasketTouch(e){
+  basket.style.left = (e.touches[0].clientX - 55) + 'px';
+}
+
+function dropGift(){
+  let gift = document.createElement('div');
+  gift.className = 'gift';
+  gift.innerText = giftEmojis[Math.floor(Math.random()*giftEmojis.length)];
+  gift.style.left = Math.random()*(window.innerWidth-60) + 'px';
+  gift.style.top = '0px';
+  gamePage.appendChild(gift);
+  gifts.push(gift);
+
+  let fallInterval = setInterval(() => {
+    let top = parseInt(gift.style.top);
+    if(top > window.innerHeight - 110){
+      let basketLeft = parseInt(basket.style.left);
+      let basketRight = basketLeft + 110;
+      let giftLeft = parseInt(gift.style.left);
+      let giftRight = giftLeft + 55;
+
+      if(giftRight > basketLeft && giftLeft < basketRight){
+        catchGift();
+      }
+      gift.remove();
+      clearInterval(fallInterval);
+    } else {
+      gift.style.top = top + 6 + 'px';
+    }
+  }, 18);
+
+  function catchGift(){
+    if(messages.length > 0){
+      let msg = messages.shift();
+      document.getElementById('messages').innerText = msg;
+    }
+    if(messages.length === 0){
+      endGame();
+    }
+  }
+}
+
+function endGame(){
+  clearInterval(gameInterval);
+  document.getElementById('game-page').style.display = 'none';
+  document.getElementById('final-page').style.display = 'flex';
+  startConfetti();
+}
+
+// 🎊 Confetti
+function startConfetti(){
+  let canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  let ctx = canvas.getContext('2d');
+  let particles = [];
+
+  for(let i=0;i<150;i++){
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: Math.random()*6+4,
+      d: Math.random()*150,
+      color: `hsl(${Math.random()*360},100%,75%)`,
+      tilt: Math.random()*10
+    });
+  }
+
+  let angle = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let p of particles){
+      ctx.beginPath();
+      ctx.lineWidth = p.r;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r/2, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/2);
+      ctx.stroke();
+    }
+    update();
+  }
+  function update(){
+    angle += 0.01;
+    for(let p of particles){
+      p.y += Math.cos(angle + p.d) + 1 + p.r/2;
+      p.x += Math.sin(angle);
+      if(p.y > canvas.height){
+        p.y = -10;
+        p.x = Math.random()*canvas.width;
+      }
+    }
+  }
+  setInterval(draw, 25);
+}
+</script>
+
+</body>
+</html>
